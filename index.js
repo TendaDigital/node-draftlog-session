@@ -2,7 +2,7 @@ const chalk = require('chalk')
 const draftlog = require('draftlog').into(console)
 
 module.exports = class DraftlogSession {
-  constructor(name, steps) {
+  constructor(steps, parent) {
     this.steps = steps
     this.stepName = ''
     this.stepNumber = 0
@@ -18,13 +18,22 @@ module.exports = class DraftlogSession {
     // Start time
     this.timeStart = Date.now()
 
-    // Log status to console
-    this.status = name
+    // Find out how "deep" this child is
+    this.parent = parent
+    this.childIndex = 0
+    while(parent){
+      this.childIndex++
+      parent = parent.parent
+    }
+  }
+
+  get indentation() {
+    return this._indentation || (this._indentation = '  '.repeat(this.childIndex))
   }
 
   finish() {
     let duration = Math.round((Date.now() - this.timeStart) / 10) / 100
-    this.status = `Done in ${duration}s.`
+    this.status = `${this.indentation}Done in ${duration}s.`
   }
 
   totalStepStr() {
@@ -50,7 +59,7 @@ module.exports = class DraftlogSession {
 
     // Build and Update text
     this.stepText = status
-    this.stepDraft(chalk.dim(`[${this.totalStepStr()}] ✓ `) + this.stepText)
+    this.stepDraft(chalk.dim(`${this.indentation}[${this.totalStepStr()}] ✓ `) + this.stepText)
   }
 
   updateStatus(status) {
@@ -59,7 +68,7 @@ module.exports = class DraftlogSession {
   }
 
   skip() {
-    this.stepDraft(chalk.dim(`[${this.totalStepStr()}] ✗ `) + chalk.dim(this.stepText + ' (skipped)'))
+    this.stepDraft(chalk.dim(`${this.indentation}[${this.totalStepStr()}] ✗ `) + chalk.dim(this.stepText + ' (skipped)'))
   }
 
   set step(name) {
@@ -68,6 +77,10 @@ module.exports = class DraftlogSession {
 
   set status(status) {
     this.updateStatus(status)
+  }
+
+  log(str, ...args) {
+    console.log(`${this.indentation}${str}`, ...args)
   }
 
   startProgress(total, msg) {
@@ -102,12 +115,12 @@ module.exports = class DraftlogSession {
     let statusText = ` ${current}/${total}`
 
     // Compute bar width
-    let barWidth = (width - msg.length -  statusText.length - 2)
+    let barWidth = (width - msg.length -  statusText.length - this.indentation.length - 2)
     let barFill = Math.floor(barWidth * (current / total)) || 0
     let barEmpty = barWidth - barFill
 
     // Build final bar
-    let bar = msg + ' ' + chalk.green('█'.repeat(barFill)) + chalk.dim('░'.repeat(barEmpty)) + chalk.yellow(statusText)
+    let bar = this.indentation + msg + '' + chalk.green('█'.repeat(barFill)) + chalk.dim('░'.repeat(barEmpty)) + chalk.yellow(statusText)
 
     // Update bar
     this.status = bar

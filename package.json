@@ -1,6 +1,6 @@
 {
   "name": "draftlog-session",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Session aware logs like Yarn with timings and steps",
   "main": "index.js",
   "repository": {
