@@ -1,0 +1,29 @@
+{
+  "name": "draftlog-session",
+  "version": "1.0.0",
+  "description": "Session aware logs like Yarn with timings and steps",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tendadigital/node-draftlog-session.git"
+  },
+  "keywords": [
+    "chalk",
+    "logging",
+    "yarn logs",
+    "draftlog",
+    "nodejs"
+  ],
+  "authors": [
+    "Ivan Seidel Gomes"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tendadigital/node-draftlog-session/issues"
+  },
+  "homepage": "https://github.com/tendadigital/node-draftlog-session",
+  "dependencies": {
+    "chalk": "^2.3.0",
+    "draftlog": "^1.0.12"
+  }
+}
